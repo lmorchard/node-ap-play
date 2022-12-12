@@ -2,10 +2,33 @@
   "name": "ap-play",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
+  "engines": {
+    "node": "16.x"
+  },
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js | pino-pretty",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "nodemonConfig": {
+    "ignore": [
+      "**/data/**"
+    ],
+    "delay": 500
+  },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/accepts": "^4.1.0",
+    "@fastify/static": "^6.6.0",
+    "@hapi/boom": "^10.0.0",
+    "dotenv": "^16.0.3",
+    "fastify": "^4.10.2",
+    "nodemon": "^2.0.20",
+    "npm-run-all": "^4.1.5",
+    "onchange": "^7.1.0",
+    "pino-pretty": "^9.1.1"
+  }
 }
