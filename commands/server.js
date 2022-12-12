@@ -108,7 +108,8 @@ async function getActor(request, reply) {
   const actor = await actors.fetch(username);
 
   const accept = request.accepts();
-  switch (accept.type(["json", "html"])) {
+  switch (accept.type(["application/activity+json", "json", "html"])) {
+    case "application/activity+json":
     case "json":
       return reply.type("application/activity+json").send(await actor.toJSON());
     case "html":
