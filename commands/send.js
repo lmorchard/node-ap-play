@@ -74,21 +74,24 @@ async function run({ from, to, message }) {
   const guidObject = crypto.randomBytes(16).toString("hex");
   let object = {
     id: `${BASE_URL}/objects/${guidObject}`,
+    url: `${BASE_URL}/objects/${guidObject}`,
     type: "Note",
     published: d.toISOString(),
     attributedTo: fromActor.id,
-    content: message,
     to: [AS_TO_PUBLIC],
+    cc: [toActorId],
+    tag: [{ type: "Mention", href: toActor }],
+    content: message,
   };
 
   const guidActivity = crypto.randomBytes(16).toString("hex");
   let activity = {
     "@context": "https://www.w3.org/ns/activitystreams",
     id: `${BASE_URL}/activities/${guidActivity}`,
+    url: `${BASE_URL}/activities/${guidActivity}`,
     type: "Create",
     actor: fromActor.id,
     to: [AS_TO_PUBLIC],
-    cc: [toActorId],
     object: object,
   };
 
