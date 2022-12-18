@@ -51,20 +51,24 @@ async function run({ from, to, message }) {
 
   const date = new Date();
 
+  const getSignHeaders = await signRequest({
+    method: "get",
+    url: toActor,
+    actor: fromActor,
+    date,
+  });
+
+  log.debug({ msg: "toActor get sign", toActor, ...getSignHeaders});
+
   const toActorResponse = await axios.get(toActor, {
     headers: { 
       accept: "application/activity+json", 
-      ...(await signRequest({
-        method: "get",
-        url: toActor,
-        actor: fromActor,
-        date,
-      })),
+      ...getSignHeaders,
     },
   });
 
   log.debug({
-    msg: "toActor",
+    msg: "toActor RESPONSE",
     data: toActorResponse.data
   });
 
@@ -91,7 +95,15 @@ async function run({ from, to, message }) {
     attributedTo: fromActor.id,
     to: [AS_TO_PUBLIC],
     cc: [toActorId],
-    tag: [{ type: "Mention", href: toActor }],
+    tag: [
+      {
+        type: "Mention",
+        // Mastodon is fine with just href
+        href: toActor,
+        // GTS pickily validates mention names!
+        name: `@${to}`,
+      }
+    ],
     content: message,
   };
 
@@ -103,6 +115,7 @@ async function run({ from, to, message }) {
     type: "Create",
     actor: fromActor.id,
     to: [AS_TO_PUBLIC],
+    cc: [toActorId],
     object: object,
   };
 
@@ -114,6 +127,8 @@ async function run({ from, to, message }) {
       url: actorInbox,
       data: activity,
       headers: {
+        // GTS will NOT accept application/json like mastodon
+        "Content-Type": "application/activity+json",
         ...(await signRequest({
           method: "post",
           url: actorInbox,
@@ -133,9 +148,8 @@ async function run({ from, to, message }) {
     console.log(error);
     log.error({
       msg: "inboxResponse",
-      error,
-      // code: error.code,
-      // data: error.data,
+      code: error.code,
+      data: error.data,
     });
   }
 }
