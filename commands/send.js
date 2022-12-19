@@ -39,7 +39,8 @@ async function run({ from, to, message }) {
   log.debug({ msg: "webfingerUrl", webfingerUrl });
 
   const webfingerResponse = await axios.get(webfingerUrl, {
-    params: { resource: to },
+    // snac2 needs `acct:` or else 404, whereas Mastodon & GTS seem not to
+    params: { resource:`acct:${to}` },
   });
   log.debug({ msg: "webfingerResponse", data: webfingerResponse.data });
 
